@@ -1,0 +1,10 @@
+# Godot 4 specific ignores
+.godot/
+*.uid
+
+# Exported projects
+export/
+
+# OS generated
+.DS_Store
+Thumbs.db
