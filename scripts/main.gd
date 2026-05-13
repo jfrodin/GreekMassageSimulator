@@ -7,6 +7,7 @@ extends Node
 @onready var ui: CanvasLayer = $UI
 
 func _ready() -> void:
+	ui.init(dialogue)
 	dialogue.dialogue_started.connect(ui.show_dialogue)
 	dialogue.dialogue_ended.connect(ui.hide_dialogue)
 	escalation.game_over.connect(_on_game_over)

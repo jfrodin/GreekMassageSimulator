@@ -28,6 +28,11 @@ visible = false
 [node name="VBox" type="VBoxContainer" parent="DialogueBox"]
 layout_mode = 2
 
+[node name="CountdownLabel" type="Label" parent="DialogueBox/VBox"]
+layout_mode = 2
+text = "10s"
+horizontal_alignment = 2
+
 [node name="MasseurLine" type="Label" parent="DialogueBox/VBox"]
 layout_mode = 2
 autowrap_mode = 3

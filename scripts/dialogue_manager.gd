@@ -5,6 +5,8 @@ signal dialogue_ended
 
 @onready var escalation: Node = $"../EscalationManager"
 
+const ANSWER_TIME := 10.0
+
 const DIALOGUE := [
 	# Step 0 — shoulders
 	{
@@ -59,13 +61,20 @@ const DIALOGUE := [
 ]
 
 var _active := false
+var _deadline_ms := 0.0
 
 func trigger_dialogue(step: int) -> void:
 	if _active or step >= DIALOGUE.size():
 		return
 	_active = true
-	escalation.pause()
+	_deadline_ms = Time.get_ticks_msec() + ANSWER_TIME * 1000.0
+	get_tree().create_timer(ANSWER_TIME).timeout.connect(_on_timeout)
 	dialogue_started.emit(DIALOGUE[step])
+
+func answer_time_left() -> float:
+	if not _active:
+		return 0.0
+	return maxf(0.0, (_deadline_ms - Time.get_ticks_msec()) / 1000.0)
 
 func choose_option(option_index: int, step: int) -> void:
 	if not _active:
@@ -73,10 +82,15 @@ func choose_option(option_index: int, step: int) -> void:
 	var options: Array = DIALOGUE[step]["options"]
 	if option_index < 0 or option_index >= options.size():
 		return
-
 	var effect: float = options[option_index]["effect"]
 	escalation.apply_time_effect(-effect)
+	_end_dialogue()
 
+func _on_timeout() -> void:
+	if not _active:
+		return
+	_end_dialogue()
+
+func _end_dialogue() -> void:
 	_active = false
-	escalation.resume()
 	dialogue_ended.emit()

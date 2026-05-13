@@ -5,6 +5,7 @@ signal restart_pressed
 
 @onready var timer_label: Label = $TimerLabel
 @onready var dialogue_box: PanelContainer = $DialogueBox
+@onready var countdown_label: Label = $DialogueBox/VBox/CountdownLabel
 @onready var masseur_line: Label = $DialogueBox/VBox/MasseurLine
 @onready var option_buttons: Array[Button] = [
 	$DialogueBox/VBox/Option1,
@@ -16,11 +17,22 @@ signal restart_pressed
 @onready var highscore_label: Label = $GameOverScreen/VBox/HighscoreLabel
 @onready var restart_button: Button = $GameOverScreen/VBox/RestartButton
 
+var _dialogue_manager: Node = null
+var _dialogue_active := false
+
 func _ready() -> void:
 	for i in option_buttons.size():
 		var idx := i
 		option_buttons[i].pressed.connect(func(): option_chosen.emit(idx))
 	restart_button.pressed.connect(func(): restart_pressed.emit())
+
+func init(dialogue_manager: Node) -> void:
+	_dialogue_manager = dialogue_manager
+
+func _process(_delta: float) -> void:
+	if _dialogue_active and _dialogue_manager:
+		var t := _dialogue_manager.answer_time_left()
+		countdown_label.text = str(ceili(t)) + "s"
 
 func show_dialogue(entry: Dictionary) -> void:
 	masseur_line.text = entry["masseur"]
@@ -31,10 +43,12 @@ func show_dialogue(entry: Dictionary) -> void:
 			option_buttons[i].visible = true
 		else:
 			option_buttons[i].visible = false
+	_dialogue_active = true
 	dialogue_box.visible = true
 	Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
 
 func hide_dialogue() -> void:
+	_dialogue_active = false
 	dialogue_box.visible = false
 	Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
 
