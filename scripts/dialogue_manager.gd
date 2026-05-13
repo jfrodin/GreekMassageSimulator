@@ -1,14 +1,10 @@
 extends Node
 
-signal dialogue_started(options: Array)
+signal dialogue_started(entry: Dictionary)
 signal dialogue_ended
 
 @onready var escalation: Node = $"../EscalationManager"
 
-# Dialogue per escalation step.
-# Each entry: { "masseur": String, "options": [ { "text": String, "effect": float } ] }
-# effect > 0 = buys time (seconds added to step timer negatively = delays advance)
-# effect < 0 = backfires (seconds subtracted = rushes advance)
 const DIALOGUE := [
 	# Step 0 — shoulders
 	{
@@ -55,7 +51,7 @@ const DIALOGUE := [
 			{"text": "Please stop.", "effect": -12.0},
 		]
 	},
-	# Step 5 — final approach (no dialogue — game over triggered by escalation_manager)
+	# Step 5 — final approach (no options, game over incoming)
 	{
 		"masseur": "And now… de center of harmony. Do not be afraid. Is perfectly normal.",
 		"options": []
@@ -68,8 +64,8 @@ func trigger_dialogue(step: int) -> void:
 	if _active or step >= DIALOGUE.size():
 		return
 	_active = true
-	var entry: Dictionary = DIALOGUE[step]
-	dialogue_started.emit(entry)
+	escalation.pause()
+	dialogue_started.emit(DIALOGUE[step])
 
 func choose_option(option_index: int, step: int) -> void:
 	if not _active:
@@ -79,8 +75,8 @@ func choose_option(option_index: int, step: int) -> void:
 		return
 
 	var effect: float = options[option_index]["effect"]
-	# Positive effect delays the step timer by reducing how far along we are
 	escalation.apply_time_effect(-effect)
 
 	_active = false
+	escalation.resume()
 	dialogue_ended.emit()

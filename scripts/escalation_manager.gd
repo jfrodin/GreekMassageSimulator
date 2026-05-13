@@ -16,6 +16,12 @@ var running := false
 func apply_time_effect(seconds: float) -> void:
 	step_timer += seconds
 
+func pause() -> void:
+	running = false
+
+func resume() -> void:
+	running = true
+
 func start() -> void:
 	current_step = 0
 	step_timer = 0.0

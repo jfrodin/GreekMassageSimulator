@@ -37,6 +37,9 @@ func _on_step_changed(step: int) -> void:
 		_target_pos = STEP_POSITIONS[step]
 		_moving = true
 
+func begin() -> void:
+	dialogue_manager.trigger_dialogue(0)
+
 func _on_game_over() -> void:
 	_target_pos = STEP_POSITIONS[STEP_POSITIONS.size() - 1]
 	_moving = true

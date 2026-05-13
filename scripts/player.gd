@@ -1,6 +1,6 @@
 extends Node
 
-@onready var camera: Camera3D = $"../Player/Camera3D"
+@onready var camera: Camera3D = $Camera3D
 
 # Lying-down look limits (radians). Player can look around but not sit up.
 const PITCH_MIN := -0.4  # slightly downward
