@@ -31,7 +31,7 @@ func init(dialogue_manager: Node) -> void:
 
 func _process(_delta: float) -> void:
 	if _dialogue_active and _dialogue_manager:
-		var t := _dialogue_manager.answer_time_left()
+		var t: float = _dialogue_manager.answer_time_left()
 		countdown_label.text = str(ceili(t)) + "s"
 
 func show_dialogue(entry: Dictionary) -> void:
